@@ -3,12 +3,13 @@ import ReactTable from 'react-table-v6';
 import 'react-table-v6/react-table.css';
 import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
+import Addcar from './AddCar';
+import Editcar from './EditCar';
 
 export default function Carlist(){
     const [cars, setCars] = useState([]);
     const [open, setOpen] = useState(false);
-    const [delCar, setDelCar] = useState({brand: '', model: '', color:''});
-    const [del_msg, setDelMsg] = useState('blabla');
+    const [msg, setMsg] = useState('blabla');
 
     useEffect(() => {
         getCars();
@@ -21,21 +22,42 @@ export default function Carlist(){
         .catch(err => console.error(err))
     }
 
-    const deleteCar =(link) =>{
-        fetch(link)
-            .then((response) => {
-                return response.json();
+    const addCar =(car) =>{
+        console.log(car);
+        fetch('https://carstockrest.herokuapp.com/cars', 
+            {   
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify(car)
             })
-            .then((data) => {
-                //console.log(data.brand);                
-                //console.log(data.model); 
-                //console.log(data.color);
-                setDelCar({brand: data.brand, model: data.model, color: data.color});
+            .then(_ => getCars())
+            .then(_ =>{
+                setMsg("New Car is added");
+                setOpen(true);
+            })
+            .catch(err => console.error(err))
+    }
 
-            });
-        if (window.confirm("Are you sure?")){
+    const updateCar = (link, car) =>{
+        fetch(link,
+            {
+                method: 'PUT',
+                headers: {'Content-Type':'application/json'},
+                body:JSON.stringify(car)
+            })
+            .then(_ => getCars())
+            .then(_ => {
+                setMsg("Car is updated");
+                setOpen(true);
+                }
+        ).catch(err => console.error(err))
+    }
+
+    const deleteCar =(link) =>{
+        if (window.confirm("Are you sure?"))
+        {
             fetch(link, { method: 'Delete' })
-                .then(_ =>setDelMsg("Car: " + delCar.brand +" "+ delCar.model + " " + delCar.color + " is removed"))
+                .then(_ =>setMsg("Car is removed."))
                 .then(response => getCars()) //refresh the table
                 .then(_ => setOpen(true)) //message sent after deletion
                 .catch(err => console.error(err))
@@ -60,18 +82,25 @@ export default function Carlist(){
             accessor:'color'
         },
         {
-            Header: 'Year',
-            accessor:'year'
-        },
-        {
             Header: 'Fuel',
             accessor: 'fuel'
+        },
+        {
+            Header: 'Year',
+            accessor: 'year'
         },
         {
             Header: 'Price',
             accessor: 'price'
         },
         {
+            filterable: false,
+            sortable: false,
+            Cell: row => (<Editcar updateCar={updateCar} car={row.original} />)
+        },
+        {   
+            filterable: false,
+            sortable: false,
             accessor: '_links.self.href', //access point in the json file
             Cell: row =>(<Button color='secondary'onClick={() => deleteCar(row.value)}>Delete</Button>)
         }
@@ -79,8 +108,9 @@ export default function Carlist(){
 
     return (
         <div>
+            <Addcar addCar={addCar} />
             <ReactTable filterable={true} defaultPageSize={10} data={cars} columns={columns}></ReactTable>
-            <Snackbar open={open} autoHideDuration={40000} onClose={handelClose} message={del_msg}></Snackbar>
-            </div>
+            <Snackbar open={open} autoHideDuration={40000} onClose={handelClose} message={msg}></Snackbar>
+        </div>
     )
 }
