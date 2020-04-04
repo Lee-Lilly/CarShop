@@ -8,7 +8,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 export default function Addcar(props) {
     const [open, setOpen] = React.useState(false);
-    const [car, setCar] = React.useState({brand:'', model:'', color:'', fuel:'', year:'', price:''})
+    const [car, setCar] = React.useState({brand:'', model:'', color:'', fuel:'', year: 0, price: 0})
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -16,6 +16,9 @@ export default function Addcar(props) {
 
     const handleClose = () => {
         props.addCar(car);
+        setCar({
+            brand: '', model: '', color: '', fuel: '', year: 0, price: 0
+        })
         setOpen(false);
     };
 
@@ -24,7 +27,7 @@ export default function Addcar(props) {
     };
 
     const inputChanged = (event) =>{
-        setCar({...car, [event.target.name]: event.target.value});
+            setCar({...car, [event.target.name]: event.target.value});
     }
 
     
@@ -34,7 +37,7 @@ export default function Addcar(props) {
             <Button style={{ margin: 10 }} variant="contained" color="primary" onClick={handleClickOpen}>
                 New Car
             </Button>
-            <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+            <Dialog open={open} onClose={handleClose} disableBackdropClick={true} disableEscapeKeyDown={true} aria-labelledby="form-dialog-title">
                 <DialogTitle id="form-dialog-title">Add a new car</DialogTitle>
                 <DialogContent>                   
                     <TextField

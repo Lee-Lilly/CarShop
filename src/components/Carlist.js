@@ -24,19 +24,24 @@ export default function Carlist(){
 
     const addCar =(car) =>{
         console.log(car);
-        fetch('https://carstockrest.herokuapp.com/cars', 
-            {   
-                method: 'POST',
-                headers: {'Content-Type':'application/json'},
-                body: JSON.stringify(car)
-            })
-            .then(_ => getCars())
-            .then(_ =>{
-                setMsg("New Car is added");
-                setOpen(true);
-            })
-            .catch(err => console.error(err))
-    }
+        if (car.brand !== ''||car.model !== ''|| car.color!==''||car.fuel !==''){
+            fetch('https://carstockrest.herokuapp.com/cars', 
+                {   
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify(car)
+                })
+                .then(_ => getCars())
+                .then(_ =>{
+                    setMsg("New Car is added");
+                    setOpen(true);
+                })
+                .catch(err => console.error(err))
+        }
+        else{
+            alert("Can not add item with empty fields");
+        }
+    }    
 
     const updateCar = (link, car) =>{
         fetch(link,
@@ -110,7 +115,7 @@ export default function Carlist(){
         <div>
             <Addcar addCar={addCar} />
             <ReactTable filterable={true} defaultPageSize={10} data={cars} columns={columns}></ReactTable>
-            <Snackbar open={open} autoHideDuration={40000} onClose={handelClose} message={msg}></Snackbar>
+            <Snackbar open={open} autoHideDuration={6000} onClose={handelClose} message={msg}></Snackbar>
         </div>
     )
 }

@@ -8,7 +8,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 export default function Editcar(props) {
     const [open, setOpen] = React.useState(false);
-    const [car, setCar] = React.useState({brand:'', model:'', color:'', fuel:'', year:'', price:''})
+    const [car, setCar] = React.useState({brand:'', model:'', color:'', fuel:'', year: 0, price: 0})
 
     const handleClickOpen = () => {
         setCar({brand:props.car.brand, 
@@ -38,7 +38,7 @@ export default function Editcar(props) {
             <Button size="small" variant="contained" color="primary" onClick={handleClickOpen}>
                 Edit
             </Button>
-            <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+            <Dialog open={open} onClose={handleClose} disableBackdropClick={true} disableEscapeKeyDown={true} aria-labelledby="form-dialog-title">
                 <DialogTitle id="form-dialog-title">Edit the car</DialogTitle>
                 <DialogContent>                   
                     <TextField
